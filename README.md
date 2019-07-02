@@ -4,7 +4,10 @@ Allows you to search and save movies, tv shows, and music for offline/personal u
 Expanded from the original non-gui version: [directplexDownloader](https://github.com/ninthwalker/directPlexDownloader).
 
 ## Details/Requirements
-Requires access to an existing plex server. Can be used on your own server or a remote friends server as well.  
+1. Windows 7/8/10
+2. Powershell 3.0+
+3 .Net Framework 3.5+ (Usually already on your windows computer)
+3. Plex Server (Can be used on your own server or a remote friends server as well)
   
 Supports:
 * **Movies, TV Shows, and Music:** Download any and all media. Full TV Series or Albulms as well!
