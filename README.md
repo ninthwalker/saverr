@@ -1,7 +1,7 @@
 # Saverr
 Powershell script with a frontend GUI to download media from a Plex Server.  
 Allows you to search and save movies, tv shows, and music for offline/personal use.  
-Expanded from the original non-gui version ['directplexDownloader'](https://github.com/ninthwalker/directPlexDownloader)
+Expanded from the original non-gui version [directplexDownloader](https://github.com/ninthwalker/directPlexDownloader)
 
 ## Details/Requirements
 Requires access to an existing plex server. Can be used on your own server or a remote friends server as well.  
@@ -25,14 +25,14 @@ Supports:
 2. Open a powershell console and navigate to the folder you saved the saverr.ps1 file.
 3. Enter the below command to temporarily set the execution policy:  
   `Set-ExecutionPolicy -Scope Process Bypass`  
-  3. Alternatively, set the execution policy to permanently allow powershell scripts:  
+  Alternatively, set the execution policy to permanently allow powershell scripts:  
   `Set-ExecutionPolicy -Scope Currentuser Unrestricted`  
-  3. Then enter the below command to launch the app:  
+4. Then enter the below command to launch the app:  
   `.\saverr.ps1`  
 
 **Option Three**
 1. If you trust me, I've compiled an .exe here as well.  
-  (source is just the saverr.ps1 file that is located here converted with the [PS2EXE](https://gallery.technet.microsoft.com/scriptcenter/PS2EXE-GUI-Convert-e7cb69d5 tool). You can do it yourself if you want as well using the saverr.ps1 file)  
+  source is just the saverr.ps1 file that is located here converted with the [PS2EXE](https://gallery.technet.microsoft.com/scriptcenter/PS2EXE-GUI-Convert-e7cb69d5) tool. You can do it yourself if you want using the saverr.ps1 file.
 2. Save the saverr.exe to your computer and double click it to launch the app.  
 
 ## Config/Settings  
