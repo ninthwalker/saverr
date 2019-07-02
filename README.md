@@ -1,5 +1,5 @@
 # Saverr
-Powershell script with a front-end GUI to download media from a Plex Server.  
+Powershell script with a front-end GUI to download media from Plex Servers.  
 Allows you to search and save movies, tv shows, and music for offline/personal use.  
 Expanded from the original non-gui version: [directplexDownloader](https://github.com/ninthwalker/directPlexDownloader).
 
