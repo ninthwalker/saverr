@@ -39,7 +39,7 @@ Supports:
 2. Save the saverr.exe to your computer and double click it to launch the app.  
 
 ## How to use  
-1. Launch the script using one of the 3 methods listed above in the setup section.  
+1. Launch the script using one of the 3 methods listed above.  
 2. Enter the name of the Movie, TV show or Music artist to search for.  
 3. Select the desired result from the results box.  
   3a. If a Movie: Just click download.  
