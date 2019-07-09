@@ -53,24 +53,25 @@ TODO
 
 ## Known Issues    
 
-1. If trying to connect to a local Plex server, selecting it in the settings page may not work.  
+1. Some plex servers will not work or may act a bit funky.  
+Not much I can do about this. Everyones plex servers are set up a bit differently. Some have firewalls, special routing configuration, or nginx proxy servers in front. However, from my own use using mutiple plex servers, this works the majority of the time and the servers that do not work are outliers.  
+
+2. If trying to connect to a local Plex server, selecting it in the settings page may not work.  
 This is because of routing/rebind protection settings at your house. To get around this issue, please modify the saverrSettings.xml file manually and enter in your local IPaddress:port in the server section. ie: 192.168.1.22:32400  
 
-2. Minimizing the Saverr app window requires pausing of downloads.  
-This is because of the powersehll script download functions in the background. A pause is required to prevent hanging of the script. Minimizing will warn you that it will pause downloads. Click resume after maximizing the window again. You can also continue to do other things on your computer by opening other windows. The Saverr app will remain open behind these windows and can be re-selected again to use it without pausing of downloads.
+3. Minimizing the Saverr app window requires pausing of downloads.  
+This is because of the powershell script download functions in the background. A pause is required to prevent hanging of the script. Minimizing will warn you that it will pause downloads. Click resume after maximizing the window again. You can also continue to do other things on your computer by opening other windows. The Saverr app will remain open behind these windows and can be re-selected again to use it without pausing of downloads.
 
-3. Maximum number of downloads is 200.  
+4. Maximum number of downloads is 200.  
 This is the default setting within windows for the BITS download function being used.  
 More than 200 items will automatically be truncated to 200.  
 If you need to increase the maximum download amount, please set this registry setting below to the value desired:  
   `HKLM\Software\Policies\Microsoft\Windows\BITS` `MaxFilesPerJob`  
 Reference: [Bits](https://docs.microsoft.com/en-us/windows/desktop/bits/group-policies)
 
-TODO  
 
 ## Errors  
-Some errors are self explanatory, others are not. You can enable debugging the settings menu.  
-This will create a log file in the current saverr directory that will give more information on the error or issue.  
+Some errors are self explanatory and output to the main app window, others are not. You can enable debugging in the settings menu. This will create a log file in the current saverr directory that will give more information on the error or issue.  
 
 ## Screenshots  
 
