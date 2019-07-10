@@ -1,4 +1,4 @@
-################################
+﻿################################
 # Name:    Saverr              #
 # Desc:    d/l media from Plex #
 # Author:  Ninthwalker         #
@@ -725,6 +725,7 @@ $textBox2_dlPath.width           = 225
 $textBox2_dlPath.height          = 20
 $textBox2_dlPath.location        = New-Object System.Drawing.Point(110,245)
 $textBox2_dlPath.Font            = 'Microsoft Sans Serif,10'
+$textBox2_dlPath.Enabled         = $false
 
 $button2_dlPath                  = New-Object system.Windows.Forms.Button
 $button2_dlPath.BackColor        = "#f5a623"
@@ -797,7 +798,7 @@ $label2_saveStatus.Font          = 'Microsoft Sans Serif,8'
 $label2_saveStatus.ForeColor     = "#00ff00"
 
 $label2_help                     = New-Object system.Windows.Forms.LinkLabel
-$label2_help.text                = "Help?"
+$label2_help.text                = "Help"
 $label2_help.AutoSize            = $true
 $label2_help.width               = 70
 $label2_help.height              = 20
