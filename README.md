@@ -51,10 +51,14 @@ All config is done in the settings menu (Accessed by clicking the orange geer ic
 
 TODO  
 
+## Screenshots
+
+TODO
+
 ## Known Issues    
 
 1. Some plex servers will not work or may act a bit funky.  
-Not much I can do about this. Everyones plex servers are set up a bit differently. Some have firewalls, special routing configuration, or nginx proxy servers in front. However, from my own use using mutiple plex servers, this works the majority of the time and the servers that do not work are outliers.  
+Not much I can do about this. Everyones plex servers are set up a bit differently. Some have firewalls, special routing configuration, or nginx proxy servers in front. However, from my experience using mutiple plex servers, this works the majority of the time and the servers that do not work are outliers.  
 
 2. If trying to connect to a local Plex server, selecting it in the settings page may not work.  
 This is because of routing/rebind protection settings at your house. To get around this issue, please modify the saverrSettings.xml file manually and enter in your local IPaddress:port in the server section. ie: 192.168.1.22:32400  
