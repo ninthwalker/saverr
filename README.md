@@ -19,7 +19,7 @@ Supports:
 ## Launching Saverr
 
 **Option One**
-1. Copy the Saverr.ink shortcut, as well as the Saverr.ps1 to your computer. Place in the same directory.
+1. Copy the Saverr.lnk shortcut, as well as the Saverr.ps1 file to your computer. Place in the same directory.
 2. Double click the Saverr shortcut to launch the app.
 3. Click the gear icon to configure initial settings. (See settings section below)  
 
