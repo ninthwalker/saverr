@@ -1,10 +1,10 @@
-﻿#############################
-# Name: Saverr              #
-# Desc: d/l media from Plex #
-# Author: Ninthwalker       #
-# Date: 10JUL2019           #
-# Version: 1.0.0            #
-#############################
+################################
+# Name:    Saverr              #
+# Desc:    d/l media from Plex #
+# Author:  Ninthwalker         #
+# Date:    10JUL2019           #
+# Version: 1.0.0               #
+################################
 
 
 ###### NOTES FOR USER #######
