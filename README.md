@@ -18,6 +18,10 @@ Supports:
 
 ## Launching Saverr
 
+**Note:**
+Depending on your download method/settings, you may need to 'unblock' the files after downloading them from Github. This is normal behavior for Microsoft Windows to do for files downloaded from the internet.  
+`Right click > Properties > Check 'Unblock'`
+
 **Option One**
 1. Copy the Saverr.lnk shortcut, as well as the Saverr.ps1 file to your computer. Place in the same directory.
 2. Double click the Saverr shortcut to launch the app.
