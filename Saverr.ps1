@@ -2,8 +2,8 @@
 # Name:    Saverr              #
 # Desc:    d/l media from Plex #
 # Author:  Ninthwalker         #
-# Date:    10JUL2019           #
-# Version: 1.0.0               #
+# Date:    15JUL2019           #
+# Version: 1.0.1               #
 ################################
 
 
@@ -111,7 +111,7 @@ function logIt {
         $line = $_.InvocationInfo.ScriptLineNumber
         $msg = $e.Message 
         $eMSG = "$(Get-Date): caught exception: $e at $line. $msg"
-        $eMSG | Out-File ".\saverr.log" -Append
+        $eMSG | Out-File ".\saverrLog.txt" -Append
     }
 }
 
@@ -1609,7 +1609,7 @@ $button_download.Add_Click({
                 $bitsError = (Get-BitsTransfer | select ErrorDescription).ErrorDescription
                 if ($debug) {
                     $eMSG = "$(Get-Date): Connection Timed out after $timeout seconds. $bitsError"
-                    $eMSG | Out-File ".\saverr.log" -Append
+                    $eMSG | Out-File ".\saverrLog.txt" -Append
                 }
             }
 
@@ -1698,17 +1698,8 @@ $button_download.Add_Click({
 
                     # pause download if asked
                     if ($script:pauseLoop -eq $true) {
-                        #$progressBar.Value = 0
-                        #$label_DLTitle.ForeColor = "#ff0000"
-                        #$label_DLTitle.Text = "Download paused!"
                         $label_DLProgress.Text = "Download Paused!"
                         $label_DLProgress.ForeColor = "#ffff00" # yellow
-                        #$progressBar.Visible = $false
-                        #$button_cancel.Visible = $false
-                        #$button_cancel.Enabled = $false
-                        #$button_pause.Visible = $false
-                        #$button_pause.Enabled = $false
-                        #$CheckBoxButton_pause.Text = "Resume"
                         Get-BitsTransfer | Suspend-BitsTransfer
 
                         # allow minimize while paused
@@ -1762,7 +1753,7 @@ $button_download.Add_Click({
                     $bitsError = (Get-BitsTransfer | select ErrorDescription).ErrorDescription
                     if ($debug) {
                         $eMSG = "$(Get-Date): Download Error. $bitsError"
-                        $eMSG | Out-File ".\saverr.log" -Append
+                        $eMSG | Out-File ".\saverrLog.txt" -Append
                     }
                     $label_DLTitle.ForeColor = "#ff0000"
                     $label_DLProgress.Text = ""
@@ -1777,9 +1768,22 @@ $button_download.Add_Click({
                     
                 }
                 else {
+                    if ($startTime -ne $null) {
+                        $howLong = (get-date).Subtract($startTime)
+                        if ($howLong.Minutes -eq "0") {
+                            $dlTime = "$($howLong.Seconds) seconds"
+                        }
+                        else {
+                            $dlTime = "$($howLong.Minutes) minutes"
+                        }
+                    }
+                    else {
+                        $dlTime = "Unknown time"
+                    }
+
                     $label_DLProgress.Text = ""
                     $label_DLTitle.ForeColor = "#00ff00"
-                    $label_DLTitle.Text = "Download Completed in: $((Get-Date).Subtract($startTime).Minutes) minutes"
+                    $label_DLTitle.Text = "Download Completed in: $dlTime"
                     $button_download.Enabled = $true
                     $button_cancel.Visible = $false
                     $button_cancel.Enabled = $false
@@ -1986,6 +1990,7 @@ $checkBox_debug.Add_CheckedChanged({
         $settings | Export-Clixml .\saverrSettings.xml
     }
     $settings = Import-Clixml .\saverrSettings.xml
+    $debug = $settings.logging
 })
 
 
