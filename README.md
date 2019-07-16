@@ -53,7 +53,11 @@ Depending on your download method/settings, you may need to 'unblock' the files 
 ## Config/Settings  
 All config is done in the settings menu (Accessed by clicking the orange geer icon)  
 
-TODO  
+* **Plex Username:** Plex Username. Can be an email or a username. (this is not saved)  
+* **Plex Password:** Your Plex password. (this is not saved, only used to retrieve your plex token)  
+* **Server:** After a token has been saved from entering a username/password you can select a Plex server to search from.  
+* **Download Path:** Navigate and select a path to save downloads to.
+* **Debug:** Check to enable a log file for debugging issues.
 
 ## Known Issues    
 
@@ -70,7 +74,7 @@ This is intended. Because of the powershell script functions used in the backgro
 This is the default setting within windows for the BITS download function being used.  
 More than 200 items will automatically be truncated to 200.  
 If you need to increase the maximum download amount, please set this registry setting below to the value desired:  
-  **Path:** `HKLM\Software\Policies\Microsoft\Windows\BITS` `MaxFilesPerJob`  
+  **Path:** `HKLM\Software\Policies\Microsoft\Windows\BITS` 
   **Dword:** `MaxFilesPerJob`  
   **Decimal Value:** `Dealers Choice`  
 Reference: [Bits](https://docs.microsoft.com/en-us/windows/desktop/bits/group-policies)
@@ -81,6 +85,12 @@ Some errors are self explanatory and output to the main app window, others are n
 
 ## Screenshots  
 
+![alt tag](https://raw.githubusercontent.com/ninthwalker/saverr/master/screenshots/Saverr%20-%20Movie%20Search.png)  
 
+![alt tag](https://raw.githubusercontent.com/ninthwalker/saverr/master/screenshots/Saverr%20-%20TV%20Search.png)  
 
-![See more screenshots here](https://raw.githubusercontent.com/ninthwalker/saverr/master/screenshots/Saverr%20-%20Movie%20Search.png)
+![alt tag](https://raw.githubusercontent.com/ninthwalker/saverr/master/screenshots/Saverr%20-%20Music%20Search.png)  
+
+![alt tag](https://raw.githubusercontent.com/ninthwalker/saverr/master/screenshots/Saverr%20-%20Downloading.png)  
+
+![alt tag](https://raw.githubusercontent.com/ninthwalker/saverr/master/screenshots/Saverr%20-%20Settings.png)
