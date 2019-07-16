@@ -74,7 +74,7 @@ This is intended. Because of the powershell script functions used in the backgro
 This is the default setting within windows for the BITS download function being used.  
 More than 200 items will automatically be truncated to 200.  
 If you need to increase the maximum download amount, please set this registry setting below to the value desired:  
-  **Path:** `HKLM\Software\Policies\Microsoft\Windows\BITS` 
+  **Path:** `HKLM\Software\Policies\Microsoft\Windows\BITS`  
   **Dword:** `MaxFilesPerJob`  
   **Decimal Value:** `Dealers Choice`  
 Reference: [Bits](https://docs.microsoft.com/en-us/windows/desktop/bits/group-policies)
@@ -85,12 +85,12 @@ Some errors are self explanatory and output to the main app window, others are n
 
 ## Screenshots  
 
-![alt tag](https://raw.githubusercontent.com/ninthwalker/saverr/master/screenshots/Saverr%20-%20Movie%20Search.png)  
+![](https://raw.githubusercontent.com/ninthwalker/saverr/master/screenshots/Saverr%20-%20Movie%20Search.png)  
 
-![alt tag](https://raw.githubusercontent.com/ninthwalker/saverr/master/screenshots/Saverr%20-%20TV%20Search.png)  
+![](https://raw.githubusercontent.com/ninthwalker/saverr/master/screenshots/Saverr%20-%20TV%20Search.png)  
 
-![alt tag](https://raw.githubusercontent.com/ninthwalker/saverr/master/screenshots/Saverr%20-%20Music%20Search.png)  
+![](https://raw.githubusercontent.com/ninthwalker/saverr/master/screenshots/Saverr%20-%20Music.png)  
 
-![alt tag](https://raw.githubusercontent.com/ninthwalker/saverr/master/screenshots/Saverr%20-%20Downloading.png)  
+![](https://raw.githubusercontent.com/ninthwalker/saverr/master/screenshots/Saverr%20-%20Downloading.png)  
 
-![alt tag](https://raw.githubusercontent.com/ninthwalker/saverr/master/screenshots/Saverr%20-%20Settings.png)
+![](https://raw.githubusercontent.com/ninthwalker/saverr/master/screenshots/Saverr%20-%20Settings.png)
