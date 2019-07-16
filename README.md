@@ -51,7 +51,7 @@ Depending on your download method/settings, you may need to 'unblock' the files 
   3c. If Music, select the album or tack, then click download. (Can also select All albums or All tracks)  
 
 ## Config/Settings  
-All config is done in the settings menu (Accessed by clicking the orange geer icon)  
+All config is done in the settings menu (Accessed by clicking the orange gear icon)  
 
 * **Plex Username:** Plex Username. Can be an email or a username. (this is not saved)  
 * **Plex Password:** Your Plex password. (this is not saved, only used to retrieve your plex token)  
