@@ -40,9 +40,9 @@ Depending on your download method/settings, you may need to 'unblock' the files 
 **Option Three**
 Not available anymore. Even though the .exe was just the powershell script compiled, windows would flag it as a virus so I removed this option. You can compile it yourself if you would like an executable using this tool here:  
 (https://gallery.technet.microsoft.com/scriptcenter/PS2EXE-GUI-Convert-e7cb69d5)
-~~1. If you trust me, I've compiled an .exe here as well.  
-  source is just the Saverr.ps1 file that is located here converted with the [PS2EXE] tool. You can do it yourself if you want using the Saverr.ps1 file.
-2. Save the Saverr.exe to your computer and double click it to launch the app.
+~~1. If you trust me, I've compiled an .exe here as well.  ~~
+  ~~source is just the Saverr.ps1 file that is located here converted with the [PS2EXE] tool. You can do it yourself if you want using the Saverr.ps1 file.~~
+~~2. Save the Saverr.exe to your computer and double click it to launch the app.~~
 
 ## How to use  
 1. Launch the script using one of the methods listed above.  
