@@ -38,12 +38,14 @@ Depending on your download method/settings, you may need to 'unblock' the files 
   `.\Saverr.ps1`  
 
 **Option Three**
-1. If you trust me, I've compiled an .exe here as well.  
-  source is just the Saverr.ps1 file that is located here converted with the [PS2EXE](https://gallery.technet.microsoft.com/scriptcenter/PS2EXE-GUI-Convert-e7cb69d5) tool. You can do it yourself if you want using the Saverr.ps1 file.
-2. Save the Saverr.exe to your computer and double click it to launch the app.  
+Not available anymore. Even though the .exe was just the powershell script compiled, windows would flag it as a virus so I removed this option. You can compile it yourself if you would like an executable using this tool here:  
+(https://gallery.technet.microsoft.com/scriptcenter/PS2EXE-GUI-Convert-e7cb69d5)
+~~1. If you trust me, I've compiled an .exe here as well.  
+  source is just the Saverr.ps1 file that is located here converted with the [PS2EXE] tool. You can do it yourself if you want using the Saverr.ps1 file.
+2. Save the Saverr.exe to your computer and double click it to launch the app.
 
 ## How to use  
-1. Launch the script using one of the 3 methods listed above.  
+1. Launch the script using one of the methods listed above.  
 2. Enter the name of the Movie, TV show or Music artist to search for.  
 3. Select the desired result from the results box.  
   3a. If a Movie: Just click download.  
