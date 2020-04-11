@@ -38,6 +38,7 @@ Depending on your download method/settings, you may need to 'unblock' the files 
   `.\Saverr.ps1`  
 
 **Option Three**  
+  
 Not available anymore. Even though the .exe was just the powershell script compiled, windows would flag it as a virus so I removed this option. You can compile it yourself if you would like an executable using this tool here:  
 (https://gallery.technet.microsoft.com/scriptcenter/PS2EXE-GUI-Convert-e7cb69d5)
 ~~If you trust me, I've compiled an .exe here as well.~~
