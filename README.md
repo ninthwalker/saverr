@@ -5,7 +5,7 @@ Expanded from the original non-gui version: [directplexDownloader](https://githu
 
 ## Details/Requirements
 1. Windows 7/8/10
-2. Powershell 3.0+  
+2. Powershell 3.0+
 3 .Net Framework 3.5+ (Usually already on your windows computer)
 4. Plex Server (Can be used on your own server or a remote friends server as well)
   
