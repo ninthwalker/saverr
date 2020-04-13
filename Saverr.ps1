@@ -1,20 +1,20 @@
-﻿################################
-# Name:    Saverr              #
-# Desc:    d/l media from Plex #
-# Author:  Ninthwalker         #
-# Date:    15JUL2019           #
-# Version: 1.0.1               #
-################################
+﻿#######################################
+# Name:    Saverr                     #
+# Desc:    d/l media from Plex        #
+# Author:  Ninthwalker                #
+# Date:    13APR2020 - Corona Edition #
+# Version: 1.1.0                      #
+#######################################
 
 
 ###### NOTES FOR USER #######
 
 # See Instruction online at: https://github.com/ninthwalker/saverr
 
-# Execution policy may need to be set to run powershell scripts if not using the shortcut or compiled .exe from Github.
+# Execution policy may need to be set to run powershell scripts if not using the shortcut from Github
 # ie: Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
-# Enforce TLS for plex.tv site if wanting. Uses HTTPS/SSL by default to retrieve plex tokens. May/may not break functionality depending on network setup.
+# Enforce TLS 1.1/1.2 if wanting. Uses HTTPS/SSL by default to retrieve plex tokens. May/may not break functionality depending on network setup.
 #[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls11 -bor [Net.SecurityProtocolType]::Tls
 
 # If you need to increase the maximum downloads, please set this registry setting below to value desired.
@@ -42,7 +42,6 @@ else {
 
 # Set-Location $PSScriptRoot. Changed to above so it works with an .exe as well.
 Set-Location $ScriptPath
-
 
 #import Bitstransfer if not
 if (!(Get-Module BitsTransfer)) {
@@ -110,11 +109,11 @@ function logIt {
         $e = $_.Exception
         $line = $_.InvocationInfo.ScriptLineNumber
         $msg = $e.Message 
-        $eMSG = "$(Get-Date): caught exception: $e at $line. $msg"
-        $eMSG | Out-File ".\saverrLog.txt" -Append
     }
 }
 
+        $eMSG = "$(Get-Date): caught exception: $e at $line. $msg"
+        $eMSG | Out-File ".\saverrLog.txt" -Append
 # display size function
 function byteSize($num)
 {
@@ -129,14 +128,10 @@ function byteSize($num)
     "{0:N1} {1}" -f $num, $suffix[$index]
 }
 
-# this ended up causing issues with gettoken and doesn't seem to be needed after all.
-# ignore cert error since it may be accessing by ip and cert would show as invalid if that's the case
-# [System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
-
 # Import settings
 if (Test-Path .\saverrSettings.xml) {
     $script:settings = Import-Clixml .\saverrSettings.xml
-    if (($settings.name -eq $null) -or ($settings.server -eq $null) -or ($settings.userToken -eq $null) -or ($settings.serverToken -eq $null) -or ($settings.dlPath -eq $null)) {
+    if ((!($settings.name)) -or (!($settings.server)) -or (!($settings.userToken)) -or (!($settings.serverToken)) -or (!($settings.dlPath))) {
         $errorMsg = "Settings are not fully configured.`nPlease click the gear icon before searching."
     }
     else {
@@ -149,6 +144,28 @@ else {
 
 # enable/disable debug
 $debug = $settings.logging
+
+# enable/disable ssl
+$ssl = $settings.ssl
+
+# The below is needed when the plex server has 'Secure connections: required' set. 
+# when SSL is enforced, and the 'SSL Required' is checked on the Saverr settings page we will use HTTPS.
+# However, because we have to access by IP, the cert will show as 'invalid' since the CN will not match the IP.
+# These settings here, allow us to download from servers that enforce the SSL.
+
+# also, later on we do a similar 'ignore cert errors' for the bitstransfer job
+# using the below command/info:
+# https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/bitsadmin-setsecurityflags
+# https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/cc753211(v=ws.10)?redirectedfrom=MSDN
+# bitsadmin /SetSecurityFlags myJob 30
+
+if ($ssl -eq $True) {
+	$scheme = "https://"
+    [System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
+}
+else {
+	$scheme = "http://"
+}
 
 # Plex signin for token url
 $plexSignInUrl = "https://plex.tv/users/sign_in.xml"
@@ -745,21 +762,46 @@ $label2_pathStatus.location      = New-Object System.Drawing.Point(350,270)
 $label2_pathStatus.Font          = 'Microsoft Sans Serif,8'
 $label2_pathStatus.ForeColor     = "#ffff00"
 
+$label2_ssl                      = New-Object system.Windows.Forms.Label
+$label2_ssl.text                 = "SSL Required:"
+$label2_ssl.AutoSize             = $true
+$label2_ssl.width                = 70
+$label2_ssl.height               = 20
+$label2_ssl.location             = New-Object System.Drawing.Point(15,290)
+$label2_ssl.Font                 = 'Microsoft Sans Serif,8'
+$label2_ssl.ForeColor            = "#ffffff"
+
+$checkBox_ssl                    = New-Object System.Windows.Forms.Checkbox 
+$checkBox_ssl.location           = New-Object System.Drawing.Point(110,285)
+$checkBox_ssl.Size               = New-Object System.Drawing.Size(80,25)
+$checkBox_ssl.width              = 80
+$checkBox_ssl.height             = 25
+$checkBox_ssl.checked            = $settings.ssl
+
 $label2_debug                    = New-Object system.Windows.Forms.Label
 $label2_debug.text               = "Debug Logging:"
 $label2_debug.AutoSize           = $true
 $label2_debug.width              = 70
 $label2_debug.height             = 20
-$label2_debug.location           = New-Object System.Drawing.Point(15,300)
+$label2_debug.location           = New-Object System.Drawing.Point(15,325)
 $label2_debug.Font               = 'Microsoft Sans Serif,8'
 $label2_debug.ForeColor          = "#ffffff"
 
 $checkBox_debug                  = New-Object System.Windows.Forms.Checkbox 
-$checkBox_debug.location         = New-Object System.Drawing.Point(110,296)
+$checkBox_debug.location         = New-Object System.Drawing.Point(110,320)
 $checkBox_debug.Size             = New-Object System.Drawing.Size(80,25)
 $checkBox_debug.width            = 80
 $checkBox_debug.height           = 25
 $checkBox_debug.checked          = $settings.logging
+
+$label2_ssl_info                 = New-Object system.Windows.Forms.Label
+$label2_ssl_info.text            = "[Restart Saverr after changing SSL or Debug options]"
+$label2_ssl_info.AutoSize        = $true
+$label2_ssl_info.width           = 70
+$label2_ssl_info.height          = 20
+$label2_ssl_info.location        = New-Object System.Drawing.Point(15,360)
+$label2_ssl_info.Font            = 'Microsoft Sans Serif,8'
+$label2_ssl_info.ForeColor       = "#ffffff"
 
 $button2_servers                 = New-Object system.Windows.Forms.Button
 $button2_servers.BackColor       = "#f5a623"
@@ -784,7 +826,7 @@ $label2_notice2.text             = ""
 $label2_notice2.AutoSize         = $true
 $label2_notice2.width            = 70
 $label2_notice2.height           = 20
-$label2_notice2.location         = New-Object System.Drawing.Point(15,350)
+$label2_notice2.location         = New-Object System.Drawing.Point(15,395)
 $label2_notice2.Font             = 'Microsoft Sans Serif,8'
 $label2_notice2.ForeColor        = "#ffffff"
 
@@ -807,10 +849,10 @@ $label2_help.Font                = 'Microsoft Sans Serif,9'
 $label2_help.ForeColor           = "#00ff00"
 $label2_help.LinkColor           = "#f5a623"
 $label2_help.ActiveLinkColor     = "#f5a623"
-$label2_help.add_Click({[system.Diagnostics.Process]::start("http://github.com/ninthwalker/saverr")})
+$label2_help.add_Click({[system.Diagnostics.Process]::start("https://github.com/ninthwalker/saverr")})
 
 $label2_version                  = New-Object system.Windows.Forms.Label
-$label2_version.text             = "Ver. 1.0.0"
+$label2_version.text             = "Ver. 1.1.0"
 $label2_version.AutoSize         = $true
 $label2_version.width            = 70
 $label2_version.height           = 20
@@ -818,7 +860,7 @@ $label2_version.location         = New-Object System.Drawing.Point(480,480)
 $label2_version.Font             = 'Microsoft Sans Serif,9'
 $label2_version.ForeColor        = "#f5a623"
 
-$form2.controls.AddRange(@($label2_title,$label2_username,$label2_password,$label2_dlPath,$label2_server,$label2_pathStatus,$label2_serverStatus,$label2_notice,$label2_notice2,$label2_saveStatus,$label2_tokenStatus,$label2_help,$label2_version,$textBox2_username,$textBox2_password,$textBox2_dlPath,$label2_debug,$checkBox_debug,$comboBox2_servers,$button2_servers,$pictureBox2_logo,$button2_getToken,$button2_dlPath))
+$form2.controls.AddRange(@($label2_title,$label2_username,$label2_password,$label2_dlPath,$label2_server,$label2_pathStatus,$label2_serverStatus,$label2_notice,$label2_notice2,$label2_saveStatus,$label2_tokenStatus,$label2_help,$label2_version,$textBox2_username,$textBox2_password,$textBox2_dlPath,$label2_debug,$checkBox_debug,$label2_ssl,$checkBox_ssl,$label2_ssl_info,$comboBox2_servers,$button2_servers,$pictureBox2_logo,$button2_getToken,$button2_dlPath))
 
 
 ############################## CODE ################################
@@ -835,7 +877,7 @@ function search {
         $comboBox_results.Text = "Searching ..."
 
         # get sections
-        $sections = "http://" + $settings.server + "/library/sections/" + "?X-Plex-Token=" + $settings.serverToken
+        $sections = $scheme + $settings.server + "/library/sections/" + "?X-Plex-Token=" + $settings.serverToken
         $xmlsearch = plx $sections
 
         #$sectionType = $groupBox_type.Controls | ? { $_.Checked } | Select-Object Text
@@ -868,7 +910,7 @@ function search {
 
                 foreach ($section in $sections2search) {
     
-                    $sectionsUrl = "http://" + $settings.server + "/library/sections/$($section.key)/firstCharacter/$firstChar/" + "?X-Plex-Token=" + $settings.serverToken
+                    $sectionsUrl = $scheme + $settings.server + "/library/sections/$($section.key)/firstCharacter/$firstChar/" + "?X-Plex-Token=" + $settings.serverToken
                     $sectionsList.Add((plx $sectionsUrl))
                 }
 
@@ -883,7 +925,7 @@ function search {
 
                 foreach ($section in $sections2search) {
     
-                    $sectionsUrl = "http://" + $settings.server + "/library/sections/$($section.key)/all" + "?X-Plex-Token=" + $settings.serverToken
+                    $sectionsUrl = $scheme + $settings.server + "/library/sections/$($section.key)/all" + "?X-Plex-Token=" + $settings.serverToken
                     $artistList.Add((plx $sectionsUrl))
                      
                 }
@@ -894,7 +936,7 @@ function search {
             $trackList = new-object collections.generic.list[object]
             $artistPath = $artistsList.MediaContainer.$subSection | select key
                 foreach ($artist in $artistPath) {
-                    $artistURL = "http://" + $settings.server + "$($artist.key)" + "?X-Plex-Token=" + $settings.serverToken
+                    $artistURL = $scheme + $settings.server + "$($artist.key)" + "?X-Plex-Token=" + $settings.serverToken
                     $trackList.Add((plx $artistURl))
             }
 
@@ -936,7 +978,7 @@ function mediaInfo {
     clearDLStatus
     $comboBox_index = $comboBox_results.SelectedIndex
     $script:info = $searchResults[$comboBox_index] | Select title,type,key,tagline,summary,year,contentrating,thumb,rating,size
-    $thumb = "http://" + $settings.server + $info.thumb + "?X-Plex-Token=" + $settings.serverToken
+    $thumb = $scheme + $settings.server + $info.thumb + "?X-Plex-Token=" + $settings.serverToken
 
     # enable download button if no other downloads in progress
     if (!(Get-BitsTransfer)) {
@@ -976,7 +1018,7 @@ function mediaInfo {
 
         #get seasons
         $comboBox_seasons.Items.Clear()
-        $seasonPath = "http://" + $settings.server + "$($info.key)" + "?X-Plex-Token=" + $settings.serverToken
+        $seasonPath = $scheme + $settings.server + "$($info.key)" + "?X-Plex-Token=" + $settings.serverToken
         $xmlSeason = plx $seasonPath
             $script:seasons = $xmlSeason.MediaContainer.directory | select title,key,index
         foreach ($season in $seasons) {
@@ -994,7 +1036,7 @@ function mediaInfo {
 
         #get albums
         $comboBox_seasons.Items.Clear()
-        $seasonPath = "http://" + $settings.server + "$($info.key)" + "?X-Plex-Token=" + $settings.serverToken
+        $seasonPath = $scheme + $settings.server + "$($info.key)" + "?X-Plex-Token=" + $settings.serverToken
         $xmlSeason = plx $seasonPath
             $script:seasons = $xmlSeason.MediaContainer.directory | select title,key,index,year
 
@@ -1021,7 +1063,7 @@ function episodeSelection {
         $script:comboBox_seasons_index = $comboBox_seasons.SelectedIndex
 
         if ($comboBox_seasons.Text -ne "All Episodes") {
-            $episodePath = "http://" + $settings.server + "$($seasons[$comboBox_seasons_index].key)" + "?X-Plex-Token=" + $settings.serverToken
+            $episodePath = $scheme + $settings.server + "$($seasons[$comboBox_seasons_index].key)" + "?X-Plex-Token=" + $settings.serverToken
             $script:xmlEpisode = plx $episodePath
                 $script:episodes = $xmlEpisode.MediaContainer.video | select title,key,contentrating,summary,rating,year,thumb,originallyAvailableAt,index,duration
         
@@ -1048,7 +1090,7 @@ function episodeSelection {
     else {
         $comboBox_episodes.Items.Clear()
         $comboBox_seasons_index = $comboBox_seasons.SelectedIndex
-        $episodePath = "http://" + $settings.server + "$($seasons[$comboBox_seasons_index].key)" + "?X-Plex-Token=" + $settings.serverToken
+        $episodePath = $scheme + $settings.server + "$($seasons[$comboBox_seasons_index].key)" + "?X-Plex-Token=" + $settings.serverToken
         $script:xmlEpisode = plx $episodePath
         $script:episodes = $xmlEpisode.MediaContainer.track | select title,key,index,duration,summary,parentYear,thumb,grandparentthumb,addedAt
 
@@ -1133,7 +1175,7 @@ function getToken {
         $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $username,$password)))
 
         $headers = @{
-            "X-Plex-Version" = "1.0.0"
+            "X-Plex-Version" = "1.1.0"
             "X-Plex-Product" = "Saverr"
             "X-Plex-Client-Identifier" = "271938"
             "Content-Type" = "application/xml"
@@ -1175,7 +1217,7 @@ function getServers {
 
         # get servers
         $serversXml = plx $serversUrl
-        $script:serverList =  $serversxml.MediaContainer.Server | select name,host,port,accessToken
+        $script:serverList =  $serversxml.MediaContainer.Server | select name,host,port,accessToken,localAddresses,owned
 
         #output servers
         if ($serverList) {
@@ -1206,7 +1248,26 @@ function saveServer {
     Try {
         $comboBox2_index = $comboBox2_servers.SelectedIndex
         $selectedServer = $serverList[$comboBox2_index]
-        $serverUrl = $selectedServer.Host + ":" + $selectedServer.Port
+                
+        if ($selectedServer.owned -ne "1") {
+            $serverUrl = $selectedServer.Host + ":" + $selectedServer.Port
+        }
+        else {
+            $ipCheck = Invoke-RestMethod http://ipinfo.io/json | Select -exp ip
+            if ($ipcheck -eq $selectedServer.Host) {
+
+                if ( (($selectedServer.localaddresses).GetType().name) -eq "String" ) {
+                    $serverUrl = $selectedServer.localAddresses + ":" + "32400"
+                }
+                elseif ( (($selectedServer.localaddresses).GetType().name) -eq "Array" ) {
+                    $serverUrl = $selectedServer.localAddresses[0] + ":" + "32400"
+                }
+            }
+            else {
+                $serverUrl = $selectedServer.Host + ":" + $selectedServer.Port
+            }
+        }
+
         $serverToken = $($selectedServer.accessToken)
         $serverName = $($selectedServer.name)
 
@@ -1216,6 +1277,7 @@ function saveServer {
         dlPath = "$($textBox2_dlPath.Text)"
         userToken = "$($settings.userToken)"
         serverToken = "$serverToken"
+		ssl = "$ssl"
         logging = "$debug"
         } | Export-Clixml .\saverrSettings.xml
 
@@ -1257,6 +1319,7 @@ function clearStatusSave {
     $label2_serverStatus.text = ""
     $label2_tokenStatus.Text  = ""
     $label2_pathStatus.Text = ""
+    $label2_notice2.Text = ""
     $textBox_search.Text = ""
     $textBox2_dlPath.Text = $settings.dlPath
     $textBox2_username.Text = ""
@@ -1294,7 +1357,7 @@ function clearStatusSave {
         logit
     }
 
-    if (($settings.name -eq $null) -or ($settings.server -eq $null) -or ($settings.userToken -eq $null) -or ($settings.serverToken -eq $null) -or ($settings.dlPath -eq $null)) {
+    if ((!($settings.name)) -or (!($settings.server)) -or (!($settings.userToken)) -or (!($settings.serverToken)) -or (!($settings.dlPath))) {
         $label_mediaSummary.text = "Settings are not fully configured.`nPlease click the gear icon before searching."
     }
     else {
@@ -1389,10 +1452,10 @@ $button_download.Add_Click({
 
             # movie dl links
             if ($type -eq "movie") {
-                $mediaURL = "http://" + $settings.server + $info.key + "?X-Plex-Token=" + $settings.serverToken
+                $mediaURL = $scheme + $settings.server + $info.key + "?X-Plex-Token=" + $settings.serverToken
                 $mediaPath = plx $mediaURL
-                $mediaInfo = $mediaPath.MediaContainer.Video.Media.Part | select key,file
-                $dlURL = "http://" + $settings.server + $mediaInfo.key + "?X-Plex-Token=" + $settings.serverToken
+                $mediaInfo = $mediaPath.MediaContainer.Video.Media.Part | select key,file -First 1
+                $dlURL = $scheme + $settings.server + $mediaInfo.key + "?download=1" + "&X-Plex-Token=" + $settings.serverToken
                 $script:dlName = Split-Path $mediaInfo.file -Leaf
                 $script:dlType = "one"
             }
@@ -1405,31 +1468,49 @@ $button_download.Add_Click({
                     $script:allSeasonPath = "$($settings.dlPath)\$(Remove-InvalidChars $info.title)"
                     $allEpPath = "$allSeasonPath\$(Remove-InvalidChars $comboBox_seasons.Text)"
                     New-Item -ItemType Directory -Force -Path $allEpPath
-                    $allEp = $xmlepisode.MediaContainer.Video.Media.Part | select @{n="Source";e={"http://" + $settings.server + $_.key + "?X-Plex-Token=" + $settings.serverToken}},@{n="Destination";e={$allEpPath + "\" + (Split-Path $_.file -Leaf)}}
+                    $allEp = $xmlepisode.MediaContainer.Video.Media.Part | select @{n="Source";e={$scheme + $settings.server + $_.key + "?X-Plex-Token=" + $settings.serverToken}},@{n="Destination";e={$allEpPath + "\" + (Split-Path $_.file -Leaf)}}
                     $script:dlType = "allEp"
+
+                    # remove links that have already been downloaded
+                    $allEpData = @()
+                    For ($I=0; $I -lt $allep.count; $I++) {
+
+                        if (!(Test-Path $allEp.destination[$I])) {
+                            $allEpData += [pscustomobject] @{
+                                Source  = $allep.source[$I]
+                                Destination = $allEp.destination[$I]
+                            }
+                        }
+
+                    }
 
                 }
                 # if all seasons and all episodes is selected
                 elseif ($comboBox_episodes.Text -eq "All" -and $comboBox_seasons.Text -eq "All episodes") {
                     $script:allSeasonPath = "$($settings.dlPath)\$(Remove-InvalidChars $info.title)"
-                    $mediaURL = "http://" + $settings.server + $seasons.key[0] + "?X-Plex-Token=" + $settings.serverToken
+                    $mediaURL = $scheme + $settings.server + $seasons.key[0] + "?X-Plex-Token=" + $settings.serverToken
                     $mediaPath = plx $mediaURL
                     $seasonNumber = $mediaPath.MediaContainer.Video | select parenttitle
                     $seasonClean = $seasonNumber.parenttitle | % {Remove-InvalidChars $_}
-                    $allEp = $mediaPath.MediaContainer.Video.Media.Part | select @{n="Source";e={"http://" + $settings.server + $_.key + "?X-Plex-Token=" + $settings.serverToken}},@{n="Destination";e={(Split-Path $_.file -Leaf)}}
+                    $allEp = $mediaPath.MediaContainer.Video.Media.Part | select @{n="Source";e={$scheme + $settings.server + $_.key + "?X-Plex-Token=" + $settings.serverToken}},@{n="Destination";e={(Split-Path $_.file -Leaf)}}
                     $allEpClean = $allEp.destination | % {Remove-InvalidChars $_}
                     $script:dlType = "allSeasons"
 
                     # combine source/destination/season data for Bitstransfer import
+                    # remove links that have already been downloaded
                     $allEpData = @()
                     For ($I=0; $I -lt $allep.count; $I++) {
 
-                        $allEpData += [pscustomobject] @{
-                            Source  = $allep.source[$I]
-                            Destination = $allSeasonPath + "\" + $seasonClean[$I] + "\" + $allEpClean[$I]
-                        }
+                        $finalDestination = $allSeasonPath + "\" + $seasonClean[$I] + "\" + $allEpClean[$I]
 
+                        if (!(Test-Path $finalDestination)) {
+                            $allEpData += [pscustomobject] @{
+                                Source  = $allep.source[$I]
+                                Destination = $finalDestination
+                            }
+                        }
                     }
+
 
                     # Bitstransfer defaults to 200 max files per job. Truncate download to 200 unless registry value is set to something else.
                     if ($allEpData.length -ge $limit) {
@@ -1443,12 +1524,12 @@ $button_download.Add_Click({
 
                 }
 
-                # if just one episodes or a movie is selected
+                # if just one episode or a movie is selected
                 else {
-                    $mediaURL = "http://" + $settings.server + $infoEp.key + "?X-Plex-Token=" + $settings.serverToken
+                    $mediaURL = $scheme + $settings.server + $infoEp.key + "?X-Plex-Token=" + $settings.serverToken
                     $mediaPath = plx $mediaURL
-                    $mediaInfo = $mediaPath.MediaContainer.Video.Media.Part | select key,file
-                    $dlURL = "http://" + $settings.server + $mediaInfo.key + "?X-Plex-Token=" + $settings.serverToken
+                    $mediaInfo = $mediaPath.MediaContainer.Video.Media.Part | select key,file -First 1
+                    $dlURL = $scheme + $settings.server + $mediaInfo.key + "?download=1" + "&X-Plex-Token=" + $settings.serverToken
                     $script:dlName = Split-Path $mediaInfo.file -Leaf
                     $script:dlType = "one"
                 }
@@ -1463,8 +1544,22 @@ $button_download.Add_Click({
                     $script:allSeasonPath = "$($settings.dlPath)\$(Remove-InvalidChars $info.title)"
                     $allEpPath = "$allSeasonPath\$(Remove-InvalidChars $comboBox_seasons.Text)"
                     New-Item -ItemType Directory -Force -Path $allEpPath
-                    $allEp = $xmlepisode.MediaContainer.Track.Media.Part | select @{n="Source";e={"http://" + $settings.server + $_.key + "?X-Plex-Token=" + $settings.serverToken}},@{n="Destination";e={$allEpPath + "\" + (Split-Path $_.file -Leaf)}}
+                    $allEp = $xmlepisode.MediaContainer.Track.Media.Part | select @{n="Source";e={$scheme + $settings.server + $_.key + "?X-Plex-Token=" + $settings.serverToken}},@{n="Destination";e={$allEpPath + "\" + (Split-Path $_.file -Leaf)}}
                     $script:dlType = "allTracks"
+
+                    # remove links that have already been downloaded
+                    $allEpData = @()
+                    For ($I=0; $I -lt $allep.count; $I++) {
+
+                        if (!(Test-Path $allEp.destination[$I])) {
+                            $allEpData += [pscustomobject] @{
+                                Source  = $allep.source[$I]
+                                Destination = $allEp.destination[$I]
+                            }
+                        }
+
+                    }
+
                 }
 
                 # if all tracks and all albums is selected
@@ -1473,11 +1568,11 @@ $button_download.Add_Click({
 
                     # collect all album metadata paths
                     $mediaURL = @()
-                    $seasons | % { $mediaURL += "http://" + $settings.server + $_.key + "?X-Plex-Token=" + $settings.serverToken }
+                    $seasons | % { $mediaURL += $scheme + $settings.server + $_.key + "?X-Plex-Token=" + $settings.serverToken }
 
                     # get all tracks
                     $all = $mediaURL | % {(plx $_).MediaContainer.Track}
-                    $allEp = $all.media.part | select @{n="Source";e={"http://" + $settings.server + $_.key + "?X-Plex-Token=" + $settings.serverToken}},@{n="Destination";e={(Split-Path $_.file -Leaf)}}  
+                    $allEp = $all.media.part | select @{n="Source";e={$scheme + $settings.server + $_.key + "?X-Plex-Token=" + $settings.serverToken}},@{n="Destination";e={(Split-Path $_.file -Leaf)}}  
                     $allClean = $all.parenttitle | % {Remove-InvalidChars $_}
                     $allEpClean = $allEp.destination | % {Remove-InvalidChars $_}
                     $script:dlType = "allAlbums"
@@ -1486,9 +1581,13 @@ $button_download.Add_Click({
                     $allEpData = @()
                     For ($I=0; $I -lt $allEp.count; $I++) {
 
-                        $allEpData += [pscustomobject] @{
-                            Source  = $allEp.source[$I]
-                            Destination = $allSeasonPath + "\" + $allClean[$I] + "\" + $allEpClean[$I]
+                        $finalDestination = $allSeasonPath + "\" + $seasonClean[$I] + "\" + $allEpClean[$I]
+
+                        if (!(Test-Path $finalDestination)) {
+                            $allEpData += [pscustomobject] @{
+                                Source  = $allEp.source[$I]
+                                Destination = $finalDestination
+                            }
                         }
 
                     }
@@ -1507,11 +1606,11 @@ $button_download.Add_Click({
 
                 # if just one music track is selected
                 else {
-                    $mediaURL = "http://" + $settings.server + $infoEp.key + "?X-Plex-Token=" + $settings.serverToken
+                    $mediaURL = $scheme + $settings.server + $infoEp.key + "?X-Plex-Token=" + $settings.serverToken
                     $mediaPath = plx $mediaURL
-                    $mediaInfo = $mediaPath.MediaContainer.track.media.part | select key,file
-                    $mediaInfo2 = $mediaPath.MediaContainer.track | select grandparentTitle,parentTitle,title
-                    $dlURL = "http://" + $settings.server + $mediaInfo.key + "?X-Plex-Token=" + $settings.serverToken
+                    $mediaInfo = $mediaPath.MediaContainer.track.media.part | select key,file -First 1
+                    $mediaInfo2 = $mediaPath.MediaContainer.track | select grandparentTitle,parentTitle,title -First 1
+                    $dlURL = $scheme + $settings.server + $mediaInfo.key + "?download=1" + "&X-Plex-Token=" + $settings.serverToken
                     $script:dlName = Split-Path $mediaInfo.file -Leaf
                     $script:dlType = "one"
                 }
@@ -1529,8 +1628,9 @@ $button_download.Add_Click({
 
             # download all episodes from a season or album
             if ($dlType -eq "allEp" -or $dlType -eq "allTracks") {
-                $script:myjob = Start-BitsTransfer -source "$($allEp.Source[0])" -Destination "$($allEp.Destination[0])" -DisplayName "Downloading ..." -Description "All Episodes" -Asynchronous -Suspended
-                $allEp[1..($allEp.Length -1)] | Add-BitsFile $myjob
+                $script:myjob = Start-BitsTransfer -source "$($allEpData.Source[0])" -Destination "$($allEpData.Destination[0])" -DisplayName "Downloading ..." -Description "All Episodes" -Asynchronous -Suspended
+                $allEpData[1..($allEpData.Length -1)] | Add-BitsFile $myjob
+                if ($ssl -eq $True) {bitsadmin /SetSecurityFlags $myjob.displayname 30}
                 Resume-BitsTransfer $myjob -Asynchronous
             }
 
@@ -1538,12 +1638,15 @@ $button_download.Add_Click({
             elseif ($dltype -eq "allSeasons" -or $dlType -eq "allAlbums") {
                 $script:myjob = Start-BitsTransfer -source "$($allEpData.Source[0])" -Destination "$($allEpData.Destination[0])" -DisplayName "Downloading ..." -Description "All Episodes" -Asynchronous -Suspended
                 $allEpData[1..($allEpData.Length -1)] | Add-BitsFile $myjob
+                if ($ssl -eq $True) {bitsadmin /SetSecurityFlags $myjob.displayname 30}
                 Resume-BitsTransfer $myjob -Asynchronous
             }
 
             # download a movie or one episode or one song
             else {
-                $script:myjob = Start-BitsTransfer -Source $dlURL -Destination "$($settings.dlPath)\$dlName" -DisplayName "Downloading ..." -Description $dlName -Asynchronous
+                $script:myjob = Start-BitsTransfer -Source $dlURL -Destination "$($settings.dlPath)\$dlName" -DisplayName "Downloading ..." -Description $dlName -Asynchronous -Suspended
+                if ($ssl -eq $True) {bitsadmin /SetSecurityFlags $myjob.displayname 30}
+				Resume-BitsTransfer $myjob -Asynchronous
             }
 
         }
@@ -1991,6 +2094,29 @@ $checkBox_debug.Add_CheckedChanged({
     }
     $settings = Import-Clixml .\saverrSettings.xml
     $debug = $settings.logging
+})
+
+$checkBox_ssl.Add_CheckedChanged({
+    if ($checkBox_ssl.Checked -eq $true){
+        $setSSL = $true
+    }
+    else {
+        $setSSL = $false
+    }
+    # update settings file
+    if (Test-Path .\saverrSettings.xml) {
+        $script:settings = Import-Clixml .\saverrSettings.xml
+        Add-Member -InputObject $settings -MemberType NoteProperty -Name 'ssl' -Value $setSSL -force
+        $settings | Export-Clixml .\saverrSettings.xml
+    }
+    else {
+        $script:settings = [pscustomobject] @{
+            ssl = $setSSL
+        }
+        $settings | Export-Clixml .\saverrSettings.xml
+    }
+    $settings = Import-Clixml .\saverrSettings.xml
+    $ssl = $settings.ssl
 })
 
 
