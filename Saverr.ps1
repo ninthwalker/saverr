@@ -1574,6 +1574,7 @@ $button_download.Add_Click({
                     $all = $mediaURL | % {(plx $_).MediaContainer.Track}
                     $allEp = $all.media.part | select @{n="Source";e={$scheme + $settings.server + $_.key + "?X-Plex-Token=" + $settings.serverToken}},@{n="Destination";e={(Split-Path $_.file -Leaf)}}  
                     $allClean = $all.parenttitle | % {Remove-InvalidChars $_}
+                    $allSeasonClean = $all.parenttitle | % {Remove-InvalidChars $_}
                     $allEpClean = $allEp.destination | % {Remove-InvalidChars $_}
                     $script:dlType = "allAlbums"
 
@@ -1581,7 +1582,7 @@ $button_download.Add_Click({
                     $allEpData = @()
                     For ($I=0; $I -lt $allEp.count; $I++) {
 
-                        $finalDestination = $allSeasonPath + "\" + $seasonClean[$I] + "\" + $allEpClean[$I]
+                        $finalDestination = $allSeasonPath + "\" + $allSeasonClean[$I] + "\" + $allEpClean[$I]
 
                         if (!(Test-Path $finalDestination)) {
                             $allEpData += [pscustomobject] @{
