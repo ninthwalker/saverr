@@ -2,8 +2,8 @@
 # Name:    Saverr                     #
 # Desc:    d/l media from Plex        #
 # Author:  Ninthwalker                #
-# Date:    13APR2020 - Corona Edition #
-# Version: 1.1.0                      #
+# Date:    22AUG2021 - Corona Edition #
+# Version: 1.1.1                      #
 #######################################
 
 
@@ -168,7 +168,7 @@ else {
 }
 
 # Plex signin for token url
-$plexSignInUrl = "https://plex.tv/users/sign_in.xml"
+$plexSignInUrl = "https://plex.tv/api/v2/users/signin"
 
 # Plex servers list URL
 $plexServersUrl = "https://plex.tv/pms/servers"
@@ -181,6 +181,7 @@ $script:pauseLoop = $false
 ### Load required libraries ###
 
 Add-Type -AssemblyName System.Windows.Forms, PresentationFramework, PresentationCore, WindowsBase, System.Drawing
+Add-Type -AssemblyName System.Net.Http
 [System.Windows.Forms.Application]::EnableVisualStyles()
 
 ################ Images ##################
@@ -852,7 +853,7 @@ $label2_help.ActiveLinkColor     = "#f5a623"
 $label2_help.add_Click({[system.Diagnostics.Process]::start("https://github.com/ninthwalker/saverr")})
 
 $label2_version                  = New-Object system.Windows.Forms.Label
-$label2_version.text             = "Ver. 1.1.0"
+$label2_version.text             = "Ver. 1.1.1"
 $label2_version.AutoSize         = $true
 $label2_version.width            = 70
 $label2_version.height           = 20
@@ -1171,40 +1172,124 @@ function getToken {
         $username = $textBox2_username.Text
         $password = $textBox2_password.Text
 
-        # Use this method for now for more powershell version backwards compatability instead of -credential
-        $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $username,$password)))
-
         $headers = @{
-            "X-Plex-Version" = "1.1.0"
+            "X-Plex-Version" = "1.1.1"
             "X-Plex-Product" = "Saverr"
             "X-Plex-Client-Identifier" = "271938"
             "Content-Type" = "application/xml"
-            "Authorization" = ("Basic {0}" -f $base64AuthInfo)
         }
 
-        $data = Invoke-RestMethod -Method POST -Uri $plexSignInUrl -Headers $headers
-        $script:userToken = $data.user.authToken
+        $formData = [System.Net.Http.MultipartFormDataContent]::new()
+        $stringHeader = [System.Net.Http.Headers.ContentDispositionHeaderValue]::new("form-data")
+        $stringHeader.Name = "login"
+        $stringContent = [System.Net.Http.StringContent]::new($username)
+        $stringContent.Headers.ContentDisposition = $stringHeader
+        $formData.Add($stringContent)
 
-        # update settings file
-        if (Test-Path .\saverrSettings.xml) {
-            $script:settings = Import-Clixml .\saverrSettings.xml
-            Add-Member -InputObject $settings -MemberType NoteProperty -Name 'userToken' -Value $userToken -force
-            $settings | Export-Clixml .\saverrSettings.xml
-        }
-        else {
-            $script:settings = [pscustomobject] @{
-                userToken = $userToken
+        $stringHeader = [System.Net.Http.Headers.ContentDispositionHeaderValue]::new("form-data")
+        $stringHeader.Name = "password"
+        $stringContent = [System.Net.Http.StringContent]::new($password)
+        $stringContent.Headers.ContentDisposition = $stringHeader
+        $formData.Add($stringContent)
+
+        $stringHeader = [System.Net.Http.Headers.ContentDispositionHeaderValue]::new("form-data")
+        $stringHeader.Name = "rememberMe"
+        $stringContent = [System.Net.Http.StringContent]::new("true")
+        $stringContent.Headers.ContentDisposition = $stringHeader
+        $formData.Add($stringContent)
+
+        $stringHeader = [System.Net.Http.Headers.ContentDispositionHeaderValue]::new("form-data")
+        $stringHeader.Name = "verificationCode"
+        $stringContent = [System.Net.Http.StringContent]::new($mfa_code)
+        $stringContent.Headers.ContentDisposition = $stringHeader
+        $formData.Add($stringContent)
+
+        $data = Invoke-RestMethod -Method POST -Uri $plexSignInUrl -Headers $headers -Body $formData -SkipHttpErrorCheck
+        if ($data.user) {
+            $script:userToken = $data.user.authToken
+
+            # update settings file
+            if (Test-Path .\saverrSettings.xml) {
+                $script:settings = Import-Clixml .\saverrSettings.xml
+                Add-Member -InputObject $settings -MemberType NoteProperty -Name 'userToken' -Value $userToken -force
+                $settings | Export-Clixml .\saverrSettings.xml
             }
-            $settings | Export-Clixml .\saverrSettings.xml
+            else {
+                $script:settings = [pscustomobject] @{
+                    userToken = $userToken
+                }
+                $settings | Export-Clixml .\saverrSettings.xml
+            }
+            $settings = Import-Clixml .\saverrSettings.xml
+            $label2_tokenStatus.ForeColor = "#00ff00"
+            $label2_tokenStatus.Text = "Token Saved!"
+        } elseif ($data.errors) {
+            # 1029 is error code for receiving username/password but not mfa code
+            if ($data.errors.error.code = 1029) {
+                $mfa_code = showMfaDialog
+                getToken
+            } else {
+                throw
+            }
+        } else {
+            throw
         }
-        $settings = Import-Clixml .\saverrSettings.xml
-        $label2_tokenStatus.ForeColor = "#00ff00"
-        $label2_tokenStatus.Text = "Token Saved!"
     }
     catch {
         $label2_tokenStatus.ForeColor = "#ff0000"
         $label2_tokenStatus.Text = "Error! User/Pass?"
         logit
+    }
+}
+
+function showMfaDialog {
+    $form                        = New-Object System.Windows.Forms.Form
+    $form.Text                   = 'MFA Verification'
+    $form.Size                   = New-Object System.Drawing.Size(300,150)
+    $form.StartPosition          = 'CenterScreen'
+
+    $label = New-Object System.Windows.Forms.Label
+    $label.Location = New-Object System.Drawing.Point(10,20)
+    $label.Size = New-Object System.Drawing.Size(280,20)
+    $label.Text = $data.errors.error.message + ':'
+
+    $textBox = New-Object System.Windows.Forms.TextBox
+    $textBox.Location = New-Object System.Drawing.Point(10,40)
+    $textBox.Size = New-Object System.Drawing.Size(260,20)
+    $textBox.MaxLength = 6
+    $textBox.Add_TextChanged({
+        if ($this.Text -match '[^0-9]') {
+            $cursorPos = $this.SelectionStart
+            $this.Text = $this.Text -replace '[^0-9]',''
+            $this.SelectionStart = $cursorPos - 1
+            $this.SelectionLength = 0
+        }
+    })
+
+    $okButton                    = New-Object System.Windows.Forms.Button
+    $okButton.Location           = New-Object System.Drawing.Point(114,80)
+    $okButton.Size               = New-Object System.Drawing.Size(75,23)
+    $okButton.Text               = 'OK'
+    $okButton.DialogResult       = [System.Windows.Forms.DialogResult]::OK
+    $form.AcceptButton           = $okButton
+
+    $cancelButton                = New-Object System.Windows.Forms.Button
+    $cancelButton.Location       = New-Object System.Drawing.Point(195,80)
+    $cancelButton.Size           = New-Object System.Drawing.Size(75,23)
+    $cancelButton.Text           = 'Cancel'
+    $cancelButton.DialogResult   = [System.Windows.Forms.DialogResult]::Cancel
+    $form.CancelButton           = $cancelButton
+
+    $form.Controls.AddRange(@($label,$textBox,$okButton,$cancelButton))
+    $form.Topmost = $true
+    $form.Add_Shown({$textBox.Select()})
+    $result = $form.ShowDialog()
+
+    if ($result -eq [System.Windows.Forms.DialogResult]::OK)
+    {
+        return $textBox.Text
+    } else {
+        throw
     }
 }
 
