@@ -1,9 +1,9 @@
-﻿#######################################
+#######################################
 # Name:    Saverr                     #
 # Desc:    d/l media from Plex        #
 # Author:  Ninthwalker                #
-# Date:    13APR2020 - Corona Edition #
-# Version: 1.1.0                      #
+# Date:    16NOV2021                  #
+# Version: 1.1.1                      #
 #######################################
 
 
@@ -108,12 +108,13 @@ function logIt {
     if ($debug) {
         $e = $_.Exception
         $line = $_.InvocationInfo.ScriptLineNumber
-        $msg = $e.Message 
+        $msg = $e.Message
+	
+        $eMSG = "$(Get-Date): caught exception: $e at $line. $msg"
+        $eMSG | Out-File ".\saverrLog.txt" -Append
     }
 }
 
-        $eMSG = "$(Get-Date): caught exception: $e at $line. $msg"
-        $eMSG | Out-File ".\saverrLog.txt" -Append
 # display size function
 function byteSize($num)
 {
@@ -967,9 +968,9 @@ function search {
     }
 
     Catch {
+        logit
         $comboBox_results.Items.Clear()
         $ComboBox_results.Text = "Error! Check settings/token/server status?"
-        logit
     }
 }
 
@@ -1202,9 +1203,9 @@ function getToken {
         $label2_tokenStatus.Text = "Token Saved!"
     }
     catch {
+        logit
         $label2_tokenStatus.ForeColor = "#ff0000"
         $label2_tokenStatus.Text = "Error! User/Pass?"
-        logit
     }
 }
 
@@ -1234,10 +1235,10 @@ function getServers {
         $label2_serverStatus.text = ""
     }
     Catch {
+        logit
         $label2_serverStatus.text = ""
         $comboBox2_servers.Items.Clear()
         $ComboBox2_servers.Text = "Error! Check token?"
-        logit
     }
 }
 
@@ -1285,9 +1286,9 @@ function saveServer {
         $label2_serverStatus.text = "Server Saved!"
     }
     Catch {
+        logit
         $label2_notice2.ForeColor = "#ff0000"
         $label2_notice2.text = "Error saving! Got token? selected a server?"
-        logit
     }
 }
 
@@ -1336,10 +1337,10 @@ function clearStatusSave {
         $label_mediaSummary.Text = ""
     }
     Catch {
+        logit
         $label_mediaTitle.ForeColor = "#ff0000"
         $label_mediaTitle.Text = "Error creating download Path"
         $label_mediaSummary.Text = "Could Not validate download directory:`n$dlPath.`n`nCheck path name or system permissions maybe?"
-        logit
     }
     
     Try {
@@ -1351,10 +1352,10 @@ function clearStatusSave {
         $label_mediaSummary.Text = ""
     }
     Catch {
+        logit
         $label_mediaTitle.ForeColor = "#ff0000"
         $label_mediaTitle.Text = "Error saving settings"
         $label_mediaSummary.Text = "Could Not Create settings file at:`n$PSScriptRoot.`n`nCheck path or system permissions maybe?"
-        logit
     }
 
     if ((!($settings.name)) -or (!($settings.server)) -or (!($settings.userToken)) -or (!($settings.serverToken)) -or (!($settings.dlPath))) {
@@ -1920,6 +1921,7 @@ $button_download.Add_Click({
     }
 
     Catch {
+        logit
         Get-BitsTransfer | Remove-BitsTransfer
 
         # clean up any empty folders
@@ -1945,7 +1947,6 @@ $button_download.Add_Click({
 
         # enable minimize again
         $form.MinimizeBox = $true
-        logit
     }
 
 })
@@ -1981,9 +1982,9 @@ $button2_dlPath.Add_Click({
         }
     }
     catch {
+        logit
         $label2_pathStatus.ForeColor = "#ff0000"
         $label2_pathStatus.Text = "Error! Check log"
-        logit
     }
 
 })
