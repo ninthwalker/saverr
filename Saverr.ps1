@@ -853,7 +853,7 @@ $label2_help.ActiveLinkColor     = "#f5a623"
 $label2_help.add_Click({[system.Diagnostics.Process]::start("https://github.com/ninthwalker/saverr")})
 
 $label2_version                  = New-Object system.Windows.Forms.Label
-$label2_version.text             = "Ver. 1.1.0"
+$label2_version.text             = "Ver. 1.1.1"
 $label2_version.AutoSize         = $true
 $label2_version.width            = 70
 $label2_version.height           = 20
@@ -1176,7 +1176,7 @@ function getToken {
         $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $username,$password)))
 
         $headers = @{
-            "X-Plex-Version" = "1.1.0"
+            "X-Plex-Version" = "1.1.1"
             "X-Plex-Product" = "Saverr"
             "X-Plex-Client-Identifier" = "271938"
             "Content-Type" = "application/xml"
