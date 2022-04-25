@@ -1531,7 +1531,7 @@ $button_download.Add_Click({
                     $mediaPath = plx $mediaURL
                     $mediaInfo = $mediaPath.MediaContainer.Video.Media.Part | select key,file -First 1
                     $dlURL = $scheme + $settings.server + $mediaInfo.key + "?download=1" + "&X-Plex-Token=" + $settings.serverToken
-                    $script:dlName = Split-Path $mediaInfo.file -Leaf
+                    $script:dlName = Split-Path $mediaInfo.file -Leaf | % {Remove-InvalidChars $_}
                     $script:dlType = "one"
                 }
              
@@ -1613,7 +1613,7 @@ $button_download.Add_Click({
                     $mediaInfo = $mediaPath.MediaContainer.track.media.part | select key,file -First 1
                     $mediaInfo2 = $mediaPath.MediaContainer.track | select grandparentTitle,parentTitle,title -First 1
                     $dlURL = $scheme + $settings.server + $mediaInfo.key + "?download=1" + "&X-Plex-Token=" + $settings.serverToken
-                    $script:dlName = Split-Path $mediaInfo.file -Leaf
+                    $script:dlName = Split-Path $mediaInfo.file -Leaf | % {Remove-InvalidChars $_}
                     $script:dlType = "one"
                 }
 
