@@ -1,8 +1,9 @@
 # Saverr
 
-[UPDATE:]
-I don't really maintain this project any longer. While it still works as far as i know, I'm not adding/changing to it any longer. I would suggest to check out a project called 'PlexRipper' if you are interested in something like my Saverr, but with a lot better GUI and feature set. You can find that here:
-https://github.com/PlexRipper/PlexRipper
+## Developers Note:  
+This script/repo is no longer maintained.  
+While it still works as far as i know, I'm not adding/changing to it any longer. I would suggest to check out a project called [PlexRipper](https://github.com/PlexRipper/PlexRipper) if you are interested in something like my Saverr, but with a lot better GUI and feature set. Thanks!
+
 
 Powershell script with a front-end GUI to download media from Plex Servers.  
 Allows you to search and save movies, tv shows, and music for offline/personal use.  
